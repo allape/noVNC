@@ -185,6 +185,8 @@ const UI = {
         UI.initSetting('bell', 'on');
         UI.initSetting('view_only', false);
         UI.initSetting('show_dot', false);
+        UI._autoClipboardEnabled = true;
+        UI.initSetting('auto_clipboard', true);
         UI.initSetting('path', 'websockify');
         UI.initSetting('repeaterID', '');
         UI.initSetting('reconnect', false);
@@ -340,6 +342,7 @@ const UI = {
             .addEventListener('click', UI.toggleClipboardPanel);
         document.getElementById("noVNC_clipboard_text")
             .addEventListener('change', UI.clipboardSend);
+        window.addEventListener('focus', UI.clipboardSendFromLocalClipboard);
     },
 
     // Add a call to save settings when the element changes,
@@ -371,6 +374,8 @@ const UI = {
         UI.addSettingChangeHandler('view_only', UI.updateViewOnly);
         UI.addSettingChangeHandler('show_dot');
         UI.addSettingChangeHandler('show_dot', UI.updateShowDotCursor);
+        UI.addSettingChangeHandler('auto_clipboard');
+        UI.addSettingChangeHandler('auto_clipboard', UI.updateAutoClipboard);
         UI.addSettingChangeHandler('host');
         UI.addSettingChangeHandler('port');
         UI.addSettingChangeHandler('path');
@@ -892,6 +897,7 @@ const UI = {
         UI.updateSetting('logging');
         UI.updateSetting('reconnect');
         UI.updateSetting('reconnect_delay');
+        UI.updateSetting('auto_clipboard');
 
         document.getElementById('noVNC_settings')
             .classList.add("noVNC_open");
@@ -998,6 +1004,10 @@ const UI = {
         Log.Debug(">> UI.clipboardReceive: " + e.detail.text.substr(0, 40) + "...");
         document.getElementById('noVNC_clipboard_text').value = e.detail.text;
         Log.Debug("<< UI.clipboardReceive");
+
+        if (UI._autoClipboardEnabled && window.navigator.clipboard) {
+            window.navigator.clipboard.writeText(e.detail.text).then();
+        }
     },
 
     clipboardSend() {
@@ -1005,6 +1015,14 @@ const UI = {
         Log.Debug(">> UI.clipboardSend: " + text.substr(0, 40) + "...");
         UI.rfb.clipboardPasteFrom(text);
         Log.Debug("<< UI.clipboardSend");
+    },
+
+    async clipboardSendFromLocalClipboard() {
+        if (!UI._autoClipboardEnabled || !UI.rfb || !window.navigator.clipboard) {
+            return;
+        }
+        document.getElementById('noVNC_clipboard_text').value = await window.navigator.clipboard.readText();
+        UI.clipboardSend();
     },
 
 /* ------^-------
@@ -1096,6 +1114,7 @@ const UI = {
         UI.rfb.qualityLevel = parseInt(UI.getSetting('quality'));
         UI.rfb.compressionLevel = parseInt(UI.getSetting('compression'));
         UI.rfb.showDotCursor = UI.getSetting('show_dot');
+        UI._autoClipboardEnabled = UI.getSetting('auto_clipboard');
 
         UI.updateViewOnly(); // requires UI.rfb
     },
@@ -1752,6 +1771,10 @@ const UI = {
     updateShowDotCursor() {
         if (!UI.rfb) return;
         UI.rfb.showDotCursor = UI.getSetting('show_dot');
+    },
+
+    updateAutoClipboard() {
+        UI._autoClipboardEnabled = UI.getSetting('auto_clipboard');
     },
 
     updateLogging() {

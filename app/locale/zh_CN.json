@@ -65,5 +65,9 @@
     "Connect": "连接",
     "Password:": "密码：",
     "Cancel": "取消",
-    "Canvas not supported.": "不支持 Canvas。"
+    "Canvas not supported.": "不支持 Canvas。",
+    "Running without HTTPS is not recommended, crashes or other issues are likely.": "不推荐在非 HTTPS 环境下运行，可能会导致崩溃或其他问题。",
+    "Credentials are required": "服务器要求提供凭据",
+    "New connection has been rejected with reason: ": "服务器拒绝建立连接，原因：",
+    "Auto Clipboard": "共享剪贴板"
 }
