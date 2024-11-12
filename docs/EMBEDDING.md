@@ -68,6 +68,9 @@ query string. Currently the following options are available:
 * `show_dot` - If a dot cursor should be shown when the remote server provides
   no local cursor, or provides a fully-transparent (invisible) cursor.
 
+* `auto_clipboard` - Auto read text from local clipboard when page is focused,
+  and auto write text into local clipboard when remote fired a `Copy` operation.
+
 * `logging` - The console log level. Can be one of `error`, `warn`, `info` or
   `debug`.
 
