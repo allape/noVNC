@@ -1050,7 +1050,7 @@ const UI = {
     },
 
     async clipboardSendFromLocalClipboard() {
-        if (!UI.rfb || !(await UI.clipboardCanRead())) {
+        if (!UI.rfb || !(await UI.clipboardCanRead()) || !document.hasFocus()) {
             return;
         }
 
